@@ -4,15 +4,22 @@ var o = new Orvibo();
 var devices = {};
 
 o.listen(function () {
-    o.discover();
     setInterval(function () {
         o.discover();
-    }, 20000);
+    }, 10000);
 });
 
 o.on("deviceadded", function (device) {
-    devices[device.macAddress] = device;
-    o.subscribe(device);
+    if (typeof devices[device.macAddress] === 'undefined') {
+        devices[device.macAddress] = device;
+        o.subscribe(device);
+    } else {
+        devices[device.macAddress].state = device.state;
+    }
+});
+
+o.on('subscribed', function(data) {
+    console.log(data);
 });
 
 exports.getDevices = function(callback) {
@@ -20,7 +27,8 @@ exports.getDevices = function(callback) {
 };
 
 exports.changeState = function(params, callback) {
-    o.setState({device: devices[params.mac], state: (params.state == 'on')});
-    devices[params.mac].state = (params.state == 'on');
+    var state = (params.state == 'on');
+    o.setState({device: devices[params.mac], state: state});
+    devices[params.mac].state = state;
     callback();
 };
