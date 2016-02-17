@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "node-gyp": "^3.3.0",
     "node-orvibo": "^1.1.0"
   },
   "devDependencies": {},
