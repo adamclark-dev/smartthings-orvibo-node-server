@@ -5,6 +5,7 @@ var devices = {};
 
 var discoveryTimer = [];
 var subscribeTimer = [];
+var stateTimer = [];
 
 o.listen(function () {
     discoveryTimer = setInterval(function () {
@@ -26,8 +27,12 @@ o.on("deviceadded", function (device) {
 
 o.on('subscribed', function(device) {
     clearInterval(subscribeTimer[device.macAddress]);
-    console.log(device);
     devices[device.macAddress] = device;
+});
+
+o.on('setstate', function(device, state) {
+    devices[device.macAddress].state = device;
+    clearInterval(stateTimer[device.macAddress]);
 });
 
 exports.getDevices = function(callback) {
@@ -36,7 +41,8 @@ exports.getDevices = function(callback) {
 
 exports.changeState = function(params, callback) {
     var state = (params.state == 'on');
-    o.setState({device: devices[params.mac], state: state});
-    devices[params.mac].state = state;
+    stateTimer[params.mac] = setInterval(function() {
+        o.setState({device: devices[params.mac], state: state});
+    }, 1000);
     callback();
 };
