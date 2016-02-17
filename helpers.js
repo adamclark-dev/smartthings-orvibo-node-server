@@ -35,14 +35,21 @@ o.on('setstate', function(device, state) {
     clearInterval(stateTimer[device.macAddress]);
 });
 
-exports.getDevices = function(callback) {
-  callback(devices);
+exports.changeState = function(params, callback) {
+    if (typeof devices[params.mac] === 'defined') {
+        var state = (params.state == 'on');
+        stateTimer[params.mac] = setInterval(function() {
+            o.setState({device: devices[params.mac], state: state});
+        }, 1000);
+    }
+    callback();
 };
 
-exports.changeState = function(params, callback) {
-    var state = (params.state == 'on');
-    stateTimer[params.mac] = setInterval(function() {
-        o.setState({device: devices[params.mac], state: state});
-    }, 1000);
-    callback();
+exports.getDevices = function(callback) {
+    callback(devices);
+};
+
+exports.queryDevice = function(params, callback) {
+    var device = (typeof devices[params.mac] !== 'undefined') ? devices[params.mac] : false;
+    callback(device);
 };

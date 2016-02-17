@@ -4,6 +4,13 @@ var url = require('url');
 var router = require('./router');
 var helpers = require('./helpers');
 
+router.register('/device', function(req, res) {
+    helpers.getDevices(function(device) {
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(device));
+    });
+});
+
 router.register('/devices', function(req, res) {
     helpers.getDevices(function(devices) {
         res.setHeader('Content-Type', 'application/json');
