@@ -11,7 +11,6 @@ o.listen(function () {
 
 o.on("deviceadded", function (device) {
     if (typeof devices[device.macAddress] === 'undefined') {
-        devices[device.macAddress] = device;
         o.subscribe(device);
     } else {
         devices[device.macAddress].state = device.state;
@@ -19,7 +18,7 @@ o.on("deviceadded", function (device) {
 });
 
 o.on('subscribed', function(data) {
-    console.log(data);
+    devices[device.macAddress] = device;
 });
 
 exports.getDevices = function(callback) {
