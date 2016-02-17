@@ -3,21 +3,30 @@ var o = new Orvibo();
 
 var devices = {};
 
+var discoveryTimer = [];
+var subscribeTimer = [];
+
 o.listen(function () {
-    setInterval(function () {
+    discoveryTimer = setInterval(function () {
         o.discover();
-    }, 10000);
+    }, 1000);
 });
 
 o.on("deviceadded", function (device) {
+    clearInterval(discoveryTimer);
+    o.discover();
     if (typeof devices[device.macAddress] === 'undefined') {
-        o.subscribe(device);
+        subscribeTimer[device.macAddress] = setInterval(function() {
+            o.subscribe(device)
+        }, 1000);
     } else {
         devices[device.macAddress].state = device.state;
     }
 });
 
-o.on('subscribed', function(data) {
+o.on('subscribed', function(device) {
+    clearInterval(subscribeTimer[device.macAddress]);
+    console.log(device);
     devices[device.macAddress] = device;
 });
 
